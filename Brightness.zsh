@@ -2,19 +2,23 @@
 
 STATE=/tmp/brightness
 
+brightness_control() {
+  qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl $*
+}
+
 set_brightness() {
-  qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl setBrightnessSilent $1
+  brightness_control setBrightnessSilent $1
 }
 
 set_brightness_percent() {
-  max=$(qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl brightnessMax)
+  max=$(brightness_control brightnessMax)
   next=$[$max * $1 / 100]
-  qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl setBrightnessSilent $next
+  brightness_control setBrightnessSilent $next
 }
 
 case $1 in
   push)
-    current=$(qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl brightness)
+    current=$(brightness_control brightness)
     echo $current >> $STATE
     set_brightness_percent $2
     ;;
